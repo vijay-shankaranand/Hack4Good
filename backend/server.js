@@ -88,7 +88,7 @@ app.get('/options', async (req, res) => {
     const result = await client.query('SELECT * FROM options WHERE question_id = $1', [questionId]);
     const options = result.rows;
     client.release();
-    res.status(200).json(rows);
+    res.status(200).json(options);
   } catch (err) {
     console.error('Error retrieving options:', err);
     res.status(500).json({ error: 'Error retrieving options' });
