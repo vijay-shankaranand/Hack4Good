@@ -69,7 +69,7 @@ app.get('/questions', async (req, res) => {
 
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM questions WHERE event_id: $1', [eventId]);
+    const result = await client.query('SELECT * FROM questions WHERE event_id = $1', [eventId]);
     const questions = result.rows;
     client.release();
     res.status(200).json(questions);
@@ -85,7 +85,7 @@ app.get('/options', async (req, res) => {
 
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM options WHERE question_id: $1', [questionId]);
+    const result = await client.query('SELECT * FROM options WHERE question_id = $1', [questionId]);
     const options = result.rows;
     client.release();
     res.status(200).json(rows);
@@ -104,7 +104,7 @@ app.post('/volunteer', async (req, res) => {
     // Insert volunteer into table
     const eventResult = await client.query(
       'INSERT INTO volunteer (volunteer_id, name) VALUES ($1, $2) RETURNING *',
-      [volunteeerId, userName]
+      [volunteerId, userName]
     );
     client.release();
     res.status(201).json({ message: 'Volunteer created successfully' });
