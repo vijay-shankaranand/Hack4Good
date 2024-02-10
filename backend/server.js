@@ -116,16 +116,13 @@ app.post('/volunteer', async (req, res) => {
 
 //Route to create new submission
 app.post('/submission', async (req, res) => {
-  const { eventId, volunteerId, optionIds } = req.body;
+  const { eventId, volunteerId, optionId, questionId } = req.body;
 
   try {
     const client = await pool.connect();
     // Insert submission into submission table
-    const eventResult = await optionIds.map(optionId => 
-      client.query(
-      'INSERT INTO submission (event_id, volunteer_id, option_id, question_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [eventId, volunteerId, optionId, optionId.question_id]
-    ));
+    const eventResult = client.query('INSERT INTO submission (event_id, volunteer_id, option_id, question_id) VALUES ($1, $2, $3, $4) RETURNING *',
+    [eventId, volunteerId, optionId, questionId]);
     client.release();
     res.status(201).json({ message: 'Event created successfully' });
   } catch (err) {
