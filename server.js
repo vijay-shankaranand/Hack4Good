@@ -4,11 +4,11 @@ const app = express();
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'Hack4Good',
-  password: 'Hack4Good',
-  port: 5433, // Default PostgreSQL port
+  user: 'dxoaihno',
+  host: 'rain.db.elephantsql.com',
+  database: 'dxoaihno',
+  password: 'lFSblelQkfSY7jmJW90n0zGkp_0uLxW8',
+  port: 5432, // Default PostgreSQL port
 });
 
 pool.connect()
@@ -49,7 +49,7 @@ app.post('/events', async (req, res) => {
 app.get('/events', async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM events');
+    const result = await client.query('SELECT * FROM event');
     const events = result.rows;
     client.release();
     res.status(200).json(events);
