@@ -73,10 +73,10 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 https://docs.google.com/presentation/d/1BrBxs7Fe8CjtYS2t1uDoQziqVKTlkJV413L9Z09vmVE/edit#slide=id.g268ce6efbfc_0_183
 
 ## Product Prototype
-
 https://hack4-good.vercel.app/
 
 ## Product Demo Video
+https://www.youtube.com/watch?v=WQLleePkB1k
 
 
 ## Future Enhancements
