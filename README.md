@@ -53,6 +53,15 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 - **Version Control** - *[git](https://git-scm.com/doc)*
 - **Hosting** - *[vercel](https://vercel.com/docs)*
 
+## Steps to run the Web Page and Backend Server locally
+
+1. Clone our repo
+2. Start terminal from the cloned repo directory
+3. Type npm install and wait for dependencies to download
+4. Type cd/backend then node server.js to host the backend locally
+5. Open a new terminal instance from the cloned repo directory
+6. Type cd/frontend and then npm install
+7. Type npm start to host the frontend locally
 
 ## Steps to use GUI Volunteer Bot
 
@@ -62,7 +71,7 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 
 https://docs.google.com/presentation/d/1BrBxs7Fe8CjtYS2t1uDoQziqVKTlkJV413L9Z09vmVE/edit#slide=id.g268ce6efbfc_0_183
 
-## Demo
+## Product Prototype
 
 https://hack4-good.vercel.app/
 
