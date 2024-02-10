@@ -32,6 +32,8 @@ app.post('/events', async (req, res) => {
       const eventId = eventResult.rows[0].event_id;
       // Insert questions into questions table
       await questions.map(question => {
+
+        console.log(question)
       const questionResult = client.query(
         'INSERT INTO questions (question_id, question_text, event_id) VALUES ($1, $2, $3)',
         [question.id, question.text, eventId]
