@@ -1,10 +1,16 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
+import json
 
 TOKEN = "6356825284:AAGGLIVlV4G2JUAF105CNzQUqYl8hPWNhDE"
+# voluntier_bot
+
+TEST_TOKEN = "6932538410:AAFmQo09aFoLT3MbciPTSe7thD8Kq5GpJ5g"
+# test_jawBot
 
 bot = telebot.TeleBot(TOKEN)
+# https://hack4good.onrender.com
 uri = 'https://hack4good.onrender.com'
 
 # -------------------------------------------   ATTENDANCE   ----------------------------------------------------
@@ -45,6 +51,8 @@ def mark_attendance(user_id, event_id):
 
 # -------------------------------------------   SURVEYS   ----------------------------------------------------
 
+question_dict = {}
+
 
 @bot.message_handler(commands=['poll'])
 def start_poll(message):
@@ -67,60 +75,120 @@ def create_survey(call):
     chat_id = call.message.chat.id
     event_id = call.data.split("_", 1)[1]
 
+    # Empty the dictionary
+    question_dict.clear()
+
     # Fetch the survey object from database
-    sample_survey_data = [
-        {
-            "survey_id": "ksndkjnjk!wojrw$%%lskdjo",
-            "event_id": "1",
-            "question": "How did you find today's session ?",
-            "options": ["Didnt like it", "Could have been better", "Went great !!", "Loved it"],
-            "type": "regular"
-        },
-        {
-            "survey_id": "kjasdijah!!@@@@jo",
-            "event_id": "2",
-            "question": "How much kilo of rice did you donate ?",
-            "options": ["0-1", "1-5", "5-10", "10-20"],
-            "type": "regular"
-        },
-        {
-            "survey_id": "kjasdijdfdah!!@@@@jo",
-            "event_id": "2",
-            "question": "Some random question ?",
-            "options": ["Help", "Out of here"],
-            "type": "regular"
-        },
-        {
-            "survey_id": "kjasdijdfdah!!@@@@jo",
-            "event_id": "2",
-            "question": "WOah waobha ksj ?",
-            "options": ["HMMMM", "WAHHAHAHAH", "yessir"],
-            "type": "regular"
-        },
-        {
-            "survey_id": "kjasdijdfdah!!@@@@jo",
-            "event_id": "2",
-            "question": "Help ?",
-            "options": ["Yes", "No"],
-            "type": "regular"
-        },
-    ]
 
-    for p in sample_survey_data:
-        question = p['question']
-        options = p['options']
-        q_type = p['type']
-        curr_event_id = p['event_id']
+    data = {
+        "eventId": event_id
+    }
 
-        if curr_event_id == event_id:
+    questions_data = None
+
+    try:
+        response = requests.get(f"{uri}/questions", json=data)
+
+        if response.status_code == 200:
+            questions_data = response.json()
+    except Exception as e:
+        print("Error: ", e)
+
+    print("Retrieved from db : ", questions_data)
+
+    for q in questions_data:
+        question = q['question_text']
+        curr_event_id = q['event_id']
+        question_id = q['question_id']
+
+        options = None
+
+        try:
+            data = {
+                "questionId": question_id
+            }
+            res = requests.get(f"{uri}/options", json=data)
+            if res.status_code == 200:
+                options = res.json()
+        except Exception as e:
+            print("Error: ", e)
+
+        print(f"text: {question}, event_id: {curr_event_id}, q_id: {question_id}, Chosen event: {event_id}")
+
+        print(curr_event_id == event_id)
+
+        option_texts = [o['option_text'] for o in options]
+        print(f"options: {options}")
+
+        if len(options) > 10:
+            option_texts = option_texts[:10]
+
+        if int(curr_event_id) == int(event_id):
             # MUST ALSO CHECK IF THEY HAVE NOT ATTEMPTED A QUIZ --> Check by fetching quiz_answer table ?
-            bot.send_poll(chat_id, question=question, options=options, type=q_type, is_anonymous=False)
+            poll = bot.send_poll(chat_id, question=question, options=option_texts, is_anonymous=False)
+
+            poll_id = poll.json['poll']['id']
+            poll_obj = poll.json['poll']
+
+            question_dict[poll_id] = poll_obj, event_id, options, question_id
 
 
 @bot.poll_answer_handler()
 def handle_answer(ans):
-    print("Poll id: ", ans.poll_id)
-    print("Poll Ans Object : ", ans.option_ids)
+    poll_id = ans.poll_id
+    option_id = ans.option_ids[0]
+    user_id = ans.user.id
+    user_name = ans.user.username
+    print("User name", user_name)
+
+    poll_obj = question_dict[poll_id][0]
+    event_id = question_dict[poll_id][1]
+    options = question_dict[poll_id][2]
+    question_id = question_dict[poll_id][3]
+
+    poll_answer = poll_obj['options'][option_id]['text']
+    question_text = poll_obj['question']
+
+    # print("OPTIONS: ", options)
+    # print("OPTION INDEX:", option_id)
+    # print("OPTIONS ID DB:", options[option_id]['option_id'])
+
+    option_id_db = options[option_id]['option_id']
+
+    submission = {
+        "eventId": event_id,
+        "volunteerId": user_id,
+        "optionId": option_id_db,
+        "questionId": question_id
+    }
+
+    user = {
+        "volunteerId": user_id,
+        "userName": user_name
+    }
+
+    print("Event id: ", event_id)
+    print("Question: ", question_text)
+    print("User id: ", user_id)
+    print("Answer: ", poll_answer)
+
+    # Create user
+    try:
+        resp = requests.post(f"{uri}/volunteer", json=user)
+        if resp.status_code == 200:
+            print("User created")
+    except Exception as e:
+        print("User alr exists", e)
+
+    # Submission to DB
+
+    try:
+        res = requests.post(f"{uri}/submission", json=submission)
+        print("RES: ", res)
+        if res.status_code == 200:
+            print("Successful")
+    except Exception as e:
+        print("Error: ", e)
 
 
 def get_user_events():
