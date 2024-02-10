@@ -1,9 +1,11 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import requests
 
 TOKEN = "6356825284:AAGGLIVlV4G2JUAF105CNzQUqYl8hPWNhDE"
 
 bot = telebot.TeleBot(TOKEN)
+uri = 'https://hack4good.onrender.com'
 
 # -------------------------------------------   ATTENDANCE   ----------------------------------------------------
 
@@ -13,10 +15,10 @@ def check_attendance(message):
     chat_id = message.chat.id
 
     # Get list of events user is signed up for
-    events = get_user_events(bot.get_me().id)
+    events = get_user_events()
 
     if not events:
-        bot.send_message(chat_id, "You are not registered for any events !!")
+        bot.send_message(chat_id, "No events yet !!")
 
     event_list = ""
     for i, event in enumerate(events):
@@ -48,10 +50,10 @@ def mark_attendance(user_id, event_id):
 def start_poll(message):
     chat_id = message.chat.id
 
-    user_events = get_user_events(bot.get_me())
+    user_events = get_user_events()
 
     if not user_events:
-        bot.send_message(chat_id, "You are not registered for any events !!")
+        bot.send_message(chat_id, "No events yet !!")
 
     keyboard = InlineKeyboardMarkup()
     for i, event in enumerate(user_events):
@@ -121,27 +123,16 @@ def handle_answer(ans):
     print("Poll Ans Object : ", ans.option_ids)
 
 
-def get_user_events(user_id):
-    # Fetch events from DB using user_id
+def get_user_events():
+    # Fetch events from DB
 
-    sample_events_data = [
-      {
-        "event_id": "1",
-        "name": "Help the kids in Yishun",
-        "start_date": "2024-02-10",
-        "end_date": "2024-02-10",
-        "is_active": True
-      },
-      {
-        "event_id": "2",
-        "name": "Clearing litter at the beach",
-        "start_date": "2024-02-05",
-        "end_date": "2024-02-20",
-        "is_active": True
-      }
-    ]
+    response = requests.get(f'{uri}/events')
+    print("Response: ", response.status_code)
 
-    return sample_events_data
+    events = response.json()
+    print("Events: ", events)
+
+    return events
 
 
 bot.infinity_polling()
