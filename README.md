@@ -10,7 +10,7 @@
 
 &nbsp;3. [Tech Stack](#tech-stack)
 
-&nbsp;4. [Steps to use the bot](#steps-to-use-the-bot)
+&nbsp;4. [Steps to use GUI Volunteer Bot](#steps-to-use-gui-volunteer-bot)
 
 &nbsp;5. [Project Page](#project-page)
 
@@ -54,7 +54,7 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 - **Hosting** - *[vercel](https://vercel.com/docs)*
 
 
-## Steps to use the Bot
+## Steps to use GUI Volunteer Bot
 
 ## Project Page
 
