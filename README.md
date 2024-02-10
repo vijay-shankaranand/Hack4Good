@@ -46,7 +46,7 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 - **Frontend** - *[React.js](https://legacy.reactjs.org/docs/getting-started.html)*
 - **Styling** - *[Tailwind CSS](https://tailwindcss.com/resources) and [vanilla CSS](https://developer.mozilla.org/en-US/docs/Web/CSS)*
 - **Backend** - *[Node.js](https://nodejs.org/it/docs)* and *[Python](https://docs.python.org/3/)*
-- **Database** - *[Elephantsql](https://www.elephantsql.com/)*
+- **Database** - *[postgresql](https://www.postgresql.org/docs/)*
 - **Telegram Bot** - *[Telegram Bot API](https://core.telegram.org/bots/api)*
 - **Routing** - *[react-router-dom](https://reactrouter.com/en/main)*
 - **API Requests** - *[axios](https://axios-http.com/docs/intro)*
