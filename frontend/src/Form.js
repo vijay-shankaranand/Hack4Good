@@ -9,37 +9,83 @@ function Form() {
   const [formData, setFormData] = useState({
     eventName: '',
     eventDate: new Date(),
-    questions: [''], // Array to store multiple inputs for "Question"
+    questions: [{ id: 1, text: '', options: [{ id: 1, text: '' }] }],
     eventPw: ''
   });
 
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = (e, index) => {
+  const handleChange = (e, questionId, optionId) => {
     const { name, value } = e.target;
-    const questions = [...formData.questions];
-    questions[index] = value;
-    setFormData({
-      ...formData,
-      questions
-    });
+    if (name === 'text') {
+      const updatedQuestions = formData.questions.map(question => {
+        if (question.id === questionId) {
+          return { ...question, text: value };
+        }
+        return question;
+      });
+      setFormData({
+        ...formData,
+        questions: updatedQuestions
+      });
+    } else if (name === 'options') {
+      const updatedOptions = formData.questions.map(question => {
+        if (question.id === questionId) {
+          const updatedQuestionOptions = question.options.map(option => {
+            if (option.id === optionId) {
+              return { ...option, text: value };
+            }
+            return option;
+          });
+          return { ...question, options: updatedQuestionOptions };
+        }
+        return question;
+      });
+      setFormData({
+        ...formData,
+        questions: updatedOptions
+      });
+    }
   };
 
-  const handleAddInput = () => {
-    const questions = [...formData.questions, ''];
-    setFormData({
-      ...formData,
-      questions
-    });
+  const handleAddQuestion = () => {
+    const newQuestionId = formData.questions.length + 1;
+    const newQuestion = { id: newQuestionId, text: '', options: [{ id: 1, text: '' }] };
+    setFormData(prevState => ({
+      ...prevState,
+      questions: [...prevState.questions, newQuestion]
+    }));
   };
 
-  const handleRemoveInput = (index) => {
-    const questions = [...formData.questions];
-    questions.splice(index, 1);
+  const handleAddOption = (questionId) => {
+    const question = formData.questions.find(q => q.id === questionId);
+    if (question.options.length < 10) {
+      const newOptionId = question.options.length + 1;
+      const updatedQuestions = formData.questions.map(q => {
+        if (q.id === questionId) {
+          return { ...q, options: [...q.options, { id: newOptionId, text: '' }] };
+        }
+        return q;
+      });
+      setFormData({
+        ...formData,
+        questions: updatedQuestions
+      });
+    }
+  };
+
+  const handleRemoveOption = (questionId, optionId) => {
+    const updatedQuestions = formData.questions.map(q => {
+      if (q.id === questionId) {
+        const updatedOptions = q.options.filter(option => option.id !== optionId);
+        return { ...q, options: updatedOptions };
+      }
+      return q;
+    });
     setFormData({
       ...formData,
-      questions
+      questions: updatedQuestions
     });
   };
 
@@ -53,7 +99,7 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Reset error state
-    if (formData.eventName.trim() === '' || formData.questions.some(q => q.trim() === '') || formData.eventPw.trim() === '') {
+    if (formData.eventName.trim() === '' || formData.questions.some(q => q.text.trim() === '' || q.options.some(option => option.text.trim() === '')) || formData.eventPw.trim() === '') {
       setError('Please fill in all fields');
       return;
     }
@@ -104,25 +150,42 @@ function Form() {
             className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2">Questions:</label>
-          {formData.questions.map((question, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <input
-                type="text"
-                value={question}
-                onChange={(e) => handleChange(e, index)}
-                className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500"
-              />
-              <button type="button" onClick={() => handleRemoveInput(index)} className="ml-2 bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600">
-                -
+        {formData.questions.map(question => (
+          <div key={question.id} className="mb-4">
+            <label className="block text-sm font-bold mb-2">{`Question ${question.id}:`}</label>
+            <input
+              type="text"
+              value={question.text}
+              onChange={(e) => handleChange(e, question.id)}
+              name="text"
+              placeholder="Enter question"
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 mb-2"
+            />
+            {question.options.map(option => (
+              <div key={option.id} className="flex items-center mb-2">
+                <input
+                  type="text"
+                  value={option.text}
+                  onChange={(e) => handleChange(e, question.id, option.id)}
+                  name="options"
+                  placeholder={`Option ${option.id}`}
+                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500"
+                />
+                <button type="button" onClick={() => handleRemoveOption(question.id, option.id)} className="ml-2 bg-red-500 text-white py-1 px-2 rounded-md hover:bg-red-600">
+                  -
+                </button>
+              </div>
+            ))}
+            {question.options.length < 10 && (
+              <button type="button" onClick={() => handleAddOption(question.id)} className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600">
+                + Add Option
               </button>
-            </div>
-          ))}
-          <button type="button" onClick={handleAddInput} className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600">
-            + Add Question
-          </button>
-        </div>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={handleAddQuestion} className="bg-blue-500 text-white py-1 px-2 rounded-md hover:bg-blue-600">
+          + Add Question
+        </button>
         <div className="mb-4">
           <label htmlFor="eventPw" className="block text-sm font-bold mb-2">Event Password:</label>
           <input
@@ -143,10 +206,3 @@ function Form() {
 }
 
 export default Form;
-
-
-
-
-
-
-
