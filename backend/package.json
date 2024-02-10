@@ -1,0 +1,11 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+      "test": "jest --detectOpenHandles",
+      "build": "npm i",
+      "start": "node server.js"
+    }
+  }
