@@ -66,6 +66,7 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 ## Steps to use GUI Volunteer Bot
 
 ## Project Page
+[Devpost](https://devpost.com/software/gui-volunteer-bot)
 
 ## Project Pitch Deck
 
