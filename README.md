@@ -64,6 +64,13 @@ Our GUI Volunteer Bot is a project that was built primarily around Javascript an
 7. Type npm start to host the frontend locally
 
 ## Steps to use GUI Volunteer Bot
+1. Start by searching for @GUI_Volunteer_Bot in telegram
+2. Next click start to start the bot
+3. On the bottom left you can click the "Menu" button to see the commands
+4. The Feedback command will let you pick the feedback for the respective event
+5. This will generate the poll for that event (as set up in the website)
+6. After choosing the answers, your submission will be recorded !
+7. The Get Response command will generate the data analysis bot and return the feedback collected as a pie chart!
 
 ## Project Page
 [Devpost](https://devpost.com/software/gui-volunteer-bot)
