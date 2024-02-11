@@ -83,11 +83,11 @@ app.get('/questions', async (req, res) => {
 
 //Get options of a question
 app.get('/options', async (req, res) => {
-  const { questionId } = req.body;
+  const { questionId, eventId } = req.body;
 
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM options WHERE question_id = $1', [questionId]);
+    const result = await client.query('SELECT * FROM options WHERE question_id = $1 AND event_id = $2', [questionId, eventId]);
     const options = result.rows;
     client.release();
     res.status(200).json(options);
