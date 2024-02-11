@@ -116,6 +116,26 @@ app.post('/volunteer', async (req, res) => {
   }
 });
 
+
+app.get('/volunteer', async (req, res) => {
+  const { volunteerId } = req.body;
+
+  try {
+    const client = await pool.connect();
+    // Check volunteer in table
+    const result = await client.query(
+      'SELECT * FROM volunteer WHERE volunteer_id = $1',
+      [volunteerId]
+    );
+    const volunteer = result.rows;
+    client.release();
+    res.status(200).json(volunteer);
+  } catch (err) {
+    console.error('Error retrieving volunteer:', err);
+    res.status(500).json({ error: 'Error retrieving volunteer' });
+  }
+});
+
 //Route to create new submission
 app.post('/submission', async (req, res) => {
   const { eventId, volunteerId, optionId, questionId } = req.body;
